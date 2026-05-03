@@ -1,6 +1,7 @@
 import sys
 import subprocess
 
+from utils.repository_reader import get_files
 from utils.file_reader import read_file
 from agent.core import QuenadeAgent
 
@@ -21,41 +22,48 @@ def main():
 
     if len(sys.argv) < 3:
 
-        print("Usage: python3 main.py [explain|review] <file>")
+        print("Usage: python3 main.py [explain|review|security] <path>")
         return
 
 
     command = sys.argv[1]
-
     file_path = sys.argv[2]
 
 
-    code = read_file(file_path)
+    files = get_files(file_path)
 
 
     agent = QuenadeAgent(ollama_llm)
 
 
-    if command == "explain":
+    for file in files:
 
-        result = agent.explain(code)
+        print(f"Analizando: {file}")
 
-
-    elif command == "review":
-
-        result = agent.review(code)
-        
-    elif command == "security":
-
-        result = agent.security(code)
+        code = read_file(file)
 
 
-    else:
+        if command == "explain":
 
-        result = "Unknown command"
+            result = agent.explain(code)
 
 
-    print(result)
+        elif command == "review":
+
+            result = agent.review(code)
+
+
+        elif command == "security":
+
+            result = agent.security(code)
+
+
+        else:
+
+            result = "Unknown command"
+
+
+        print(result)
 
 
 if __name__ == "__main__":
